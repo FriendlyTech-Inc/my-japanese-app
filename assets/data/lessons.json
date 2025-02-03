@@ -1,0 +1,73 @@
+[
+  {
+    "id": 1,
+    "title": { "ja": "挨拶", "en": "Greetings" },
+    "phrases": [
+      { "ja": "こんにちは", "en": "Hello" },
+      { "ja": "おはようございます", "en": "Good morning" },
+      { "ja": "こんばんは", "en": "Good evening" },
+      { "ja": "ありがとう", "en": "Thank you" }
+    ],
+    "quizzes": [
+      {
+        "type": "multiple-choice",
+        "question": {
+          "ja": "「こんにちは」の意味は？",
+          "en": "What is the meaning of 'こんにちは'?"
+        },
+        "options": [
+          { "ja": "こんにちは", "en": "Hello" },
+          { "ja": "さようなら", "en": "Goodbye" },
+          { "ja": "ありがとう", "en": "Thank you" },
+          { "ja": "おはよう", "en": "Good morning" }
+        ],
+        "correctIndex": 0
+      },
+      {
+        "type": "speaking",
+        "prompt": {
+          "ja": "「ありがとう」を言ってみましょう",
+          "en": "Say 'Thank you' in Japanese."
+        },
+        "answer": { "ja": "ありがとう", "en": "Thank you" }
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "title": { "ja": "日常会話", "en": "Daily Conversation" },
+    "phrases": [
+      { "ja": "お元気ですか？", "en": "How are you?" },
+      { "ja": "私は元気です", "en": "I am fine." },
+      { "ja": "名前は何ですか？", "en": "What is your name?" },
+      { "ja": "はじめまして", "en": "Nice to meet you." }
+    ],
+    "quizzes": [
+      {
+        "type": "multiple-choice",
+        "question": {
+          "ja": "「お元気ですか？」への返答は？",
+          "en": "What is an appropriate response to 'お元気ですか？'?"
+        },
+        "options": [
+          { "ja": "私は元気です", "en": "I am fine." },
+          { "ja": "はじめまして", "en": "Nice to meet you." },
+          { "ja": "ありがとう", "en": "Thank you." },
+          { "ja": "いいえ", "en": "No." }
+        ],
+        "correctIndex": 0
+      },
+      {
+        "type": "speaking",
+        "prompt": {
+          "ja": "自分の名前を日本語で言ってみましょう",
+          "en": "Say your name in Japanese."
+        },
+        "answer": {
+          "ja": "私の名前は〇〇です",
+          "en": "My name is ___."
+        }
+      }
+    ]
+  }
+] 
