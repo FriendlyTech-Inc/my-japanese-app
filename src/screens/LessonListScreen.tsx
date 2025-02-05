@@ -1,6 +1,6 @@
 import React, { useContext, useRef, useEffect } from 'react';
-import { View, FlatList, StyleSheet, Animated } from 'react-native';
-import { Card, Title, IconButton, Text, useTheme, Surface } from 'react-native-paper';
+import { View, FlatList, StyleSheet, Animated, ScrollView } from 'react-native';
+import { Card, Title, IconButton, Text, useTheme, Surface, ProgressBar, Badge } from 'react-native-paper';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { AppContext } from '../context/AppContext';
@@ -70,7 +70,7 @@ const ListItem = React.memo(({
             <IconButton
               icon="check-circle"
               size={24}
-              iconColor={theme.colors.success || '#4CAF50'}
+              iconColor="#4CAF50"
               style={styles.completedIcon}
             />
           )}
@@ -91,26 +91,35 @@ const ListItem = React.memo(({
   );
 });
 
+const getBadgeInfo = (completedCount: number) => {
+  if (completedCount >= 10) return { icon: 'star', color: '#FFD700', label: '達人' };
+  if (completedCount >= 5) return { icon: 'medal', color: '#C0C0C0', label: '上級者' };
+  if (completedCount >= 3) return { icon: 'school', color: '#CD7F32', label: '学習者' };
+  return { icon: 'seed', color: '#4CAF50', label: '初心者' };
+};
+
 export default function LessonListScreen({ navigation }: Props) {
   const theme = useTheme();
   const { language, completedLessons } = useContext(AppContext);
-
-  const renderItem = ({ item, index }: { item: Lesson; index: number }) => (
-    <ListItem
-      item={item}
-      index={index}
-      language={language}
-      isCompleted={completedLessons.includes(item.id)}
-      onPress={() => navigation.navigate('LessonDetail', { lessonId: item.id })}
-    />
-  );
+  const progress = completedLessons.length / typedLessonsData.length;
+  const badgeInfo = getBadgeInfo(completedLessons.length);
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <Surface style={styles.header} elevation={2}>
-        <Text variant="headlineLarge" style={styles.headerTitle}>
-          {i18n.t('lessons')}
-        </Text>
+      <Surface style={styles.header}>
+        <View style={styles.headerTop}>
+          <Text variant="headlineLarge" style={styles.headerTitle}>
+            {i18n.t('lessons')}
+          </Text>
+          <Surface style={[styles.badgeContainer, { backgroundColor: badgeInfo.color }]}>
+            <IconButton
+              icon={badgeInfo.icon}
+              iconColor="#FFF"
+              size={24}
+            />
+            <Text style={styles.badgeLabel}>{badgeInfo.label}</Text>
+          </Surface>
+        </View>
         <View style={styles.progressContainer}>
           <Text variant="bodyLarge" style={styles.progressText}>
             {completedLessons.length} / {typedLessonsData.length}
@@ -119,14 +128,62 @@ export default function LessonListScreen({ navigation }: Props) {
             {i18n.t('completed')}
           </Text>
         </View>
+        <ProgressBar
+          progress={progress}
+          color={theme.colors.primary}
+          style={styles.progressBar}
+        />
       </Surface>
-      <FlatList
-        data={typedLessonsData}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
+
+      <ScrollView
+        style={styles.scrollView}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
-      />
+      >
+        {typedLessonsData.map((lesson) => {
+          const isCompleted = completedLessons.includes(lesson.id);
+          return (
+            <Surface
+              key={lesson.id}
+              style={[
+                styles.card,
+                isCompleted && styles.completedCard,
+                isCompleted && { borderLeftColor: theme.colors.primary }
+              ]}
+            >
+              <View
+                style={styles.cardContent}
+                onTouchEnd={() => navigation.navigate('LessonDetail', { lessonId: lesson.id })}
+              >
+                <View style={styles.titleContainer}>
+                  <Text variant="titleLarge" style={styles.lessonTitle}>
+                    {lesson.title[language as 'en' | 'ja']}
+                  </Text>
+                  {isCompleted && (
+                    <IconButton
+                      icon="check-circle"
+                      iconColor={theme.colors.primary}
+                      size={24}
+                      style={styles.completedIcon}
+                    />
+                  )}
+                </View>
+                <View style={styles.statsContainer}>
+                  <Text variant="bodyMedium" style={styles.statsText}>
+                    {lesson.phrases.length} {i18n.t('phrases')}
+                  </Text>
+                  <Text variant="bodyMedium" style={[styles.statsText, styles.bulletPoint]}>
+                    •
+                  </Text>
+                  <Text variant="bodyMedium" style={styles.statsText}>
+                    {lesson.quizzes.length} {i18n.t('quizzes')}
+                  </Text>
+                </View>
+              </View>
+            </Surface>
+          );
+        })}
+      </ScrollView>
     </View>
   );
 }
@@ -143,6 +200,23 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
     fontWeight: 'bold',
   },
+  headerTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.sm,
+  },
+  badgeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 20,
+    paddingHorizontal: spacing.sm,
+  },
+  badgeLabel: {
+    color: '#FFF',
+    marginRight: spacing.sm,
+    fontWeight: '600',
+  },
   progressContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -153,6 +227,9 @@ const styles = StyleSheet.create({
   },
   progressLabel: {
     opacity: 0.7,
+  },
+  scrollView: {
+    padding: spacing.md,
   },
   listContent: {
     padding: spacing.md,
@@ -187,5 +264,13 @@ const styles = StyleSheet.create({
   },
   completedIcon: {
     margin: 0,
+  },
+  progressBar: {
+    height: 8,
+    borderRadius: 4,
+    marginTop: spacing.sm,
+  },
+  completedCard: {
+    borderLeftWidth: 4,
   },
 }); 

@@ -1,4 +1,6 @@
-interface EnhancedPronResult {
+import i18n from '../i18n/i18n';
+
+export interface EnhancedPronResult {
   accuracy: number;
   fluency: number;
   overall: number;
@@ -19,21 +21,25 @@ export async function evaluatePronunciationV2(
   const fluency = clamp(randomInRange(lengthFactor - 5, lengthFactor + 15), 30, 100);
   const overall = Math.round((accuracy + fluency) / 2);
 
-  let comment = 'Good job! Keep practicing your pronunciation!';
-  if (overall < 50) {
-    comment = '発音がやや不明瞭です。少しゆっくり正確に話してみましょう。';
-  } else if (overall < 70) {
-    comment = 'なかなか良いですが、抑揚をもう少し意識するとより自然になります。';
-  } else if (overall < 90) {
-    comment = 'かなり良好です！さらに細かいリズムを意識してみてください。';
-  } else {
-    comment = '完璧に近い発音です！素晴らしいですね。';
+  // スコアに応じたコメントを選択
+  let commentKey = 'speaking_needs_work';
+  if (overall >= 90) {
+    commentKey = 'speaking_excellent';
+  } else if (overall >= 70) {
+    commentKey = 'speaking_good';
+  } else if (overall >= 50) {
+    commentKey = 'speaking_fair';
   }
 
   // 遅延演出
   await new Promise((res) => setTimeout(res, 800));
 
-  return { accuracy, fluency, overall, comment };
+  return {
+    accuracy,
+    fluency,
+    overall,
+    comment: i18n.t(commentKey)
+  };
 }
 
 /** 以下、ちょっとした補助関数 */

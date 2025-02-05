@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LanguageSelectScreen from '../screens/LanguageSelectScreen';
@@ -7,6 +7,7 @@ import LessonDetailScreen from '../screens/LessonDetailScreen';
 import QuizScreen from '../screens/QuizScreen';
 import i18n from '../i18n/i18n';
 import { theme } from '../theme';
+import { AppContext } from '../context/AppContext';
 
 export type RootStackParamList = {
   LanguageSelect: undefined;
@@ -18,10 +19,12 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function AppNavigator() {
+  const { language } = useContext(AppContext);
+
   return (
     <NavigationContainer>
       <Stack.Navigator 
-        initialRouteName="LanguageSelect"
+        initialRouteName={language ? "LessonList" : "LanguageSelect"}
         screenOptions={{
           headerStyle: {
             backgroundColor: theme.colors.primary,
