@@ -6,6 +6,7 @@ import LessonListScreen from '../screens/LessonListScreen';
 import LessonDetailScreen from '../screens/LessonDetailScreen';
 import QuizScreen from '../screens/QuizScreen';
 import i18n from '../i18n/i18n';
+import { theme } from '../theme';
 
 export type RootStackParamList = {
   LanguageSelect: undefined;
@@ -23,33 +24,52 @@ export default function AppNavigator() {
         initialRouteName="LanguageSelect"
         screenOptions={{
           headerStyle: {
-            backgroundColor: '#f4511e',
+            backgroundColor: theme.colors.primary,
           },
-          headerTintColor: '#fff',
+          headerTintColor: theme.colors.surface,
           headerTitleStyle: {
-            fontWeight: 'bold',
+            ...theme.fonts.headlineLarge,
+            color: theme.colors.surface,
           },
+          headerShadowVisible: false,
+          contentStyle: {
+            backgroundColor: theme.colors.background,
+          },
+          animation: 'slide_from_right',
+          animationDuration: 200,
         }}
       >
         <Stack.Screen
           name="LanguageSelect"
           component={LanguageSelectScreen}
-          options={{ title: i18n.t('selectLanguage') }}
+          options={{ 
+            title: i18n.t('selectLanguage'),
+            animation: 'fade',
+          }}
         />
         <Stack.Screen
           name="LessonList"
           component={LessonListScreen}
-          options={{ title: i18n.t('lessons') }}
+          options={{ 
+            title: i18n.t('lessons'),
+            animation: 'fade',
+          }}
         />
         <Stack.Screen
           name="LessonDetail"
           component={LessonDetailScreen}
-          options={{ title: '' }}
+          options={{ 
+            title: '',
+            animation: 'slide_from_right',
+          }}
         />
         <Stack.Screen
           name="Quiz"
           component={QuizScreen}
-          options={{ title: i18n.t('start_quiz') }}
+          options={{ 
+            title: i18n.t('start_quiz'),
+            animation: 'slide_from_bottom',
+          }}
         />
       </Stack.Navigator>
     </NavigationContainer>

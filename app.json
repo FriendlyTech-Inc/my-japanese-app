@@ -23,6 +23,24 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "fonts": [
+      {
+        "asset": "./assets/fonts/NotoSansJP-Regular.ttf",
+        "family": "Noto Sans JP"
+      },
+      {
+        "asset": "./assets/fonts/NotoSansJP-Bold.ttf",
+        "family": "Noto Sans JP Bold"
+      },
+      {
+        "asset": "./assets/fonts/NotoSansJP-Medium.ttf",
+        "family": "Noto Sans JP Medium"
+      },
+      {
+        "asset": "./assets/fonts/NotoSansJP-Light.ttf",
+        "family": "Noto Sans JP Light"
+      }
+    ]
   }
 }

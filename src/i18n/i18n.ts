@@ -8,12 +8,19 @@ const translations = {
     english: "English",
     japanese: "Japanese",
     lessons: "Lessons",
+    phrases: "phrases",
+    quizzes: "quizzes",
+    completed: "completed",
     start_quiz: "Start Quiz",
     correct: "Correct",
     incorrect: "Incorrect",
     your_score: "Your Score",
     next: "Next",
-    finish: "Finish"
+    finish: "Finish",
+    accuracy: "Accuracy",
+    fluency: "Fluency",
+    overall: "Overall",
+    back: "Back"
   },
   ja: {
     appName: "日本語学習アプリ",
@@ -21,12 +28,19 @@ const translations = {
     english: "英語",
     japanese: "日本語",
     lessons: "レッスン一覧",
-    start_quiz: "クイズ開始",
+    phrases: "フレーズ",
+    quizzes: "クイズ",
+    completed: "完了",
+    start_quiz: "クイズを始める",
     correct: "正解",
     incorrect: "不正解",
-    your_score: "スコア",
+    your_score: "あなたのスコア",
     next: "次へ",
-    finish: "終了"
+    finish: "終了",
+    accuracy: "正確性",
+    fluency: "流暢さ",
+    overall: "総合",
+    back: "戻る"
   }
 };
 

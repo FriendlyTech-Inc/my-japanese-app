@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { View, StyleSheet, Animated } from 'react-native';
-import { Card, Button, ProgressBar, Text as PaperText, Badge, Title, useTheme, Surface } from 'react-native-paper';
+import { Card, Button, ProgressBar, Text, Badge, useTheme, Surface } from 'react-native-paper';
 import { Audio } from 'expo-av';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
@@ -10,6 +10,7 @@ import lessonsData from '../../assets/data/lessons.json';
 import { Lesson, Quiz, MultipleChoiceQuestion } from '../types/LessonTypes';
 import RecordButton from '../components/RecordButton';
 import { evaluatePronunciationV2 } from '../utils/api';
+import { spacing, shadows, animations } from '../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Quiz'>;
 
@@ -20,6 +21,9 @@ interface EnhancedPronResult {
   comment: string;
 }
 
+const AnimatedCard = Animated.createAnimatedComponent(Card);
+const AnimatedSurface = Animated.createAnimatedComponent(Surface);
+
 export default function QuizScreen({ route, navigation }: Props) {
   const theme = useTheme();
   const { lessonId } = route.params;
@@ -28,13 +32,30 @@ export default function QuizScreen({ route, navigation }: Props) {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [speakingResult, setSpeakingResult] = useState<EnhancedPronResult | null>(null);
-  const [recordAnim] = useState(new Animated.Value(0));
+  const [fadeAnim] = useState(new Animated.Value(0));
+  const [slideAnim] = useState(new Animated.Value(50));
 
   const lesson = lessonsData.find(l => l.id === lessonId) as Lesson;
   if (!lesson) return null;
 
   const currentQuiz = lesson.quizzes[currentQuizIndex];
   const isLastQuiz = currentQuizIndex === lesson.quizzes.length - 1;
+
+  React.useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.spring(slideAnim, {
+        toValue: 0,
+        tension: 50,
+        friction: 7,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [currentQuizIndex]);
 
   const handleAnswer = (index: number) => {
     setSelectedAnswer(index);
@@ -58,15 +79,25 @@ export default function QuizScreen({ route, navigation }: Props) {
       setSelectedAnswer(null);
       setShowResult(false);
       setSpeakingResult(null);
+      fadeAnim.setValue(0);
+      slideAnim.setValue(50);
     }
   };
 
   const renderMultipleChoice = (quiz: MultipleChoiceQuestion) => (
-    <View style={styles.quizContent}>
+    <AnimatedSurface
+      style={[
+        styles.quizContent,
+        {
+          opacity: fadeAnim,
+          transform: [{ translateY: slideAnim }],
+        },
+      ]}
+    >
       <Surface style={styles.questionSurface}>
-        <Title style={styles.questionText}>
+        <Text variant="headlineLarge" style={styles.questionText}>
           {quiz.question[language as 'en' | 'ja']}
-        </Title>
+        </Text>
       </Surface>
       <View style={styles.optionsContainer}>
         {quiz.options.map((option, index) => (
@@ -75,12 +106,14 @@ export default function QuizScreen({ route, navigation }: Props) {
             style={[
               styles.optionWrapper,
               {
+                opacity: fadeAnim,
                 transform: [{
-                  scale: showResult && (index === quiz.correctIndex || index === selectedAnswer)
-                    ? 1.05
-                    : 1
-                }]
-              }
+                  translateY: Animated.multiply(
+                    slideAnim,
+                    new Animated.Value((index + 1) * 0.3)
+                  ),
+                }],
+              },
             ]}
           >
             <Button
@@ -92,7 +125,7 @@ export default function QuizScreen({ route, navigation }: Props) {
               ]}
               labelStyle={[
                 styles.optionLabel,
-                showResult && (index === quiz.correctIndex || (selectedAnswer === index && index !== quiz.correctIndex)) && styles.optionLabelLight
+                showResult && (index === quiz.correctIndex || (selectedAnswer === index && index !== quiz.correctIndex)) && styles.optionLabelLight,
               ]}
               disabled={showResult}
               onPress={() => handleAnswer(index)}
@@ -103,15 +136,23 @@ export default function QuizScreen({ route, navigation }: Props) {
           </Animated.View>
         ))}
       </View>
-    </View>
+    </AnimatedSurface>
   );
 
   const renderSpeakingQuiz = () => (
-    <View style={styles.quizContent}>
+    <AnimatedSurface
+      style={[
+        styles.quizContent,
+        {
+          opacity: fadeAnim,
+          transform: [{ translateY: slideAnim }],
+        },
+      ]}
+    >
       <Surface style={styles.questionSurface}>
-        <Title style={styles.questionText}>
+        <Text variant="headlineLarge" style={styles.questionText}>
           {currentQuiz.type === 'speaking' && currentQuiz.prompt[language as 'en' | 'ja']}
-        </Title>
+        </Text>
       </Surface>
       {!showResult ? (
         <View style={styles.speakingContainer}>
@@ -121,11 +162,13 @@ export default function QuizScreen({ route, navigation }: Props) {
         <Surface style={styles.feedbackSection}>
           {speakingResult && (
             <>
-              <PaperText style={styles.feedbackComment}>
+              <Text variant="bodyLarge" style={styles.feedbackComment}>
                 {speakingResult.comment}
-              </PaperText>
+              </Text>
               <View style={styles.scoreRow}>
-                <PaperText style={styles.scoreLabel}>Accuracy</PaperText>
+                <Text variant="bodyMedium" style={styles.scoreLabel}>
+                  Accuracy
+                </Text>
                 <View style={styles.scoreBarContainer}>
                   <ProgressBar
                     progress={speakingResult.accuracy / 100}
@@ -138,7 +181,9 @@ export default function QuizScreen({ route, navigation }: Props) {
                 </View>
               </View>
               <View style={styles.scoreRow}>
-                <PaperText style={styles.scoreLabel}>Fluency</PaperText>
+                <Text variant="bodyMedium" style={styles.scoreLabel}>
+                  Fluency
+                </Text>
                 <View style={styles.scoreBarContainer}>
                   <ProgressBar
                     progress={speakingResult.fluency / 100}
@@ -151,7 +196,9 @@ export default function QuizScreen({ route, navigation }: Props) {
                 </View>
               </View>
               <View style={styles.scoreRow}>
-                <PaperText style={styles.scoreLabel}>Overall</PaperText>
+                <Text variant="bodyMedium" style={styles.scoreLabel}>
+                  Overall
+                </Text>
                 <View style={styles.scoreBarContainer}>
                   <ProgressBar
                     progress={speakingResult.overall / 100}
@@ -167,15 +214,15 @@ export default function QuizScreen({ route, navigation }: Props) {
           )}
         </Surface>
       )}
-    </View>
+    </AnimatedSurface>
   );
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <Surface style={styles.header}>
-        <PaperText style={styles.lessonTitle}>
+        <Text variant="titleLarge" style={styles.lessonTitle}>
           {lesson.title[language as 'en' | 'ja']}
-        </PaperText>
+        </Text>
         <Badge size={24} style={styles.progressBadge}>
           {`${currentQuizIndex + 1} / ${lesson.quizzes.length}`}
         </Badge>
@@ -217,44 +264,44 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    elevation: 4,
+    padding: spacing.lg,
+    ...shadows.small,
   },
   lessonTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    flex: 1,
   },
   progressBadge: {
     backgroundColor: '#7C4DFF',
   },
   content: {
     flex: 1,
-    padding: 16,
+    padding: spacing.md,
   },
   quizContent: {
     flex: 1,
+    padding: spacing.lg,
+    borderRadius: 16,
+    ...shadows.small,
   },
   questionSurface: {
-    padding: 20,
+    padding: spacing.xl,
     borderRadius: 16,
-    marginBottom: 24,
-    elevation: 2,
+    marginBottom: spacing.xl,
+    ...shadows.medium,
   },
   questionText: {
-    fontSize: 22,
     textAlign: 'center',
     lineHeight: 32,
   },
   optionsContainer: {
-    marginTop: 8,
+    marginTop: spacing.lg,
   },
   optionWrapper: {
-    marginBottom: 12,
+    marginBottom: spacing.md,
   },
   option: {
     borderRadius: 12,
-    elevation: 2,
+    ...shadows.small,
   },
   optionContent: {
     height: 56,
@@ -276,28 +323,26 @@ const styles = StyleSheet.create({
   },
   speakingContainer: {
     alignItems: 'center',
-    marginTop: 32,
+    marginTop: spacing.xxl,
   },
   feedbackSection: {
-    padding: 20,
+    padding: spacing.xl,
     borderRadius: 16,
-    marginTop: 24,
-    elevation: 2,
+    marginTop: spacing.xl,
+    ...shadows.medium,
   },
   feedbackComment: {
-    fontSize: 16,
-    marginBottom: 24,
+    marginBottom: spacing.xl,
     textAlign: 'center',
     fontStyle: 'italic',
     lineHeight: 24,
   },
   scoreRow: {
-    marginBottom: 16,
+    marginBottom: spacing.lg,
   },
   scoreLabel: {
-    fontSize: 14,
-    marginBottom: 8,
-    color: '#666666',
+    marginBottom: spacing.sm,
+    opacity: 0.7,
   },
   scoreBarContainer: {
     flexDirection: 'row',
@@ -309,20 +354,20 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   scoreBadge: {
-    marginLeft: 12,
+    marginLeft: spacing.md,
   },
   footer: {
-    padding: 16,
-    elevation: 8,
+    padding: spacing.lg,
+    ...shadows.large,
   },
   nextButton: {
     borderRadius: 12,
   },
   nextButtonContent: {
-    height: 48,
+    height: 56,
   },
   nextButtonLabel: {
-    fontSize: 16,
+    fontSize: 18,
     letterSpacing: 1,
   },
 }); 
