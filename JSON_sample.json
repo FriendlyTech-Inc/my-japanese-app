@@ -1,0 +1,121 @@
+{
+    "phrases": [
+      {
+        "id": "phrase_ikimasu",
+        "jp_text": "行きます",
+        "reading": "いきます",
+        "translations": {
+          "en": "go"
+        },
+        "audio": "audio/ikimasu.mp3"
+      },
+      {
+        "id": "phrase_kouen",
+        "jp_text": "私は公園へ行きます。",
+        "reading": "わたしは こうえんへ いきます。",
+        "translations": {
+          "en": "I go to the park."
+        },
+        "audio": "audio/watashi_wa_kouen_e_ikimasu.mp3",
+        "words": [
+          {
+            "jp_word": "公園",
+            "en_word": "park",
+            "audio": "audio/kouen.mp3"
+          }
+        ]
+      },
+      {
+        "id": "phrase_toshokan",
+        "jp_text": "私は図書館へ行きます。",
+        "reading": "わたしは としょかんへ いきます。",
+        "translations": {
+          "en": "I go to the library."
+        },
+        "audio": "audio/watashi_wa_toshokan_e_ikimasu.mp3",
+        "words": [
+          {
+            "jp_word": "図書館",
+            "en_word": "library",
+            "audio": "audio/toshokan.mp3"
+          }
+        ]
+      }
+    ],
+  
+    "templates": [
+      {
+        "id": "output_basic_repeat",
+        "description": "テキストあり・音声あり復唱",
+        "parameters": {
+          "text_shown": true,
+          "audio_shown": true,
+          "translation_shown": false,
+          "mask_pattern": null
+        }
+      },
+      {
+        "id": "output_example_sentence",
+        "description": "例文復唱（テキスト・音声あり）",
+        "parameters": {
+          "text_shown": true,
+          "audio_shown": true,
+          "translation_shown": false
+        }
+      },
+      {
+        "id": "output_masked",
+        "description": "マスキング復唱（音声あり）",
+        "parameters": {
+          "text_shown": true,
+          "audio_shown": true,
+          "mask_pattern": "私は公園へ＿＿＿。"
+        }
+      },
+      {
+        "id": "output_no_audio",
+        "description": "例文復唱（テキストあり・音声なし）",
+        "parameters": {
+          "text_shown": true,
+          "audio_shown": false
+        }
+      },
+      {
+        "id": "output_masked_no_audio",
+        "description": "マスキング復唱（テキストあり・音声なし）",
+        "parameters": {
+          "text_shown": true,
+          "audio_shown": false,
+          "mask_pattern": "私は公園へ＿＿＿。"
+        }
+      },
+      {
+        "id": "output_audio_only",
+        "description": "音声のみ復唱",
+        "parameters": {
+          "text_shown": false,
+          "audio_shown": true
+        }
+      },
+      {
+        "id": "output_from_english",
+        "description": "英語文から日本語発話（テキスト英語・音声なし）",
+        "parameters": {
+          "source_language_prompt": "en",
+          "text_shown": true,
+          "audio_shown": false
+        }
+      },
+      {
+        "id": "output_from_english_with_hint",
+        "description": "英語文から日本語発話（辞書ヒントあり）",
+        "parameters": {
+          "source_language_prompt": "en",
+          "text_shown": true,
+          "audio_shown": false,
+          "dictionary_hints": true
+        }
+      }
+    ]
+  }
+  
